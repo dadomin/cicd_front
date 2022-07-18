@@ -23,6 +23,12 @@ const Main = () => {
     const [mcRes, setMcRes] = useState(""); // 운영환경 적용 요청 결과 
     const [appRes, setAppRes] = useState(""); // 운영환경 승인/반려 결과
     const [depRes, setDepRes] = useState(""); // 운영환경 배포 결과
+
+    const [choiceDisabled, setChoiceDisabled] = useState(true); // 버전선택 비활성화
+    const [tstDepDisabled, setTstDepDisabled] = useState(true); // 테스트 배포 비활성화
+    const [mrCreateDisabled, setMrCreateDisabled] =useState(true); // 운영 적용 비활성화
+    const [appDisabled, setAppDisabled] = useState(true); // 운영 승인 비활성화
+    const [depDisabled, setDepDisabled] = useState(true); // 운영 배포 비활성화
  
     // gitlab 주소 가져오기
     const getUrl = () => {
@@ -56,8 +62,25 @@ const Main = () => {
         })
     }
 
+    const clearAll = () => {
+        setPrVer("");
+        setChoiceVer("");
+        setPrId("");
+        setTstDepRes("");
+        setPrName("");
+        setMrId("");
+        setMcRes("");
+        setAppRes("");
+        setDepRes("");
+        setChoiceDisabled(true);
+        setTstDepDisabled(true);
+        setMrCreateDisabled(true);
+        setAppDisabled(true);
+        setDepDisabled(true);
+    }
     // 프로젝트 선택 시
     const selectPr = (e) => {
+        clearAll();
         setPrId(e.target.value);
         setPrName(e.target.getAttribute("pname"));
         getPrVer();
@@ -66,7 +89,7 @@ const Main = () => {
     // 버전 선택 보이기 (현재버전 포함)
     const showVer = (prVer) => {
         if(prVer !== "") {
-            return <PrVers ver={prVer} changeChoiceVer={changeChoiceVer} choiceVer={choiceVer}></PrVers>
+            return <PrVers ver={prVer} choiceDisabled={choiceDisabled}changeChoiceVer={changeChoiceVer} choiceVer={choiceVer}></PrVers>
         }
     }
 
@@ -83,21 +106,21 @@ const Main = () => {
     // 테스트 배포창 보이기
     const showTestDeploy = () =>{
         if(choiceVer !== "") {
-            return <TestDeploy changeTstDepRes={changeTstDepRes} prId={prId} choiceVer={choiceVer}></TestDeploy>;
+            return <TestDeploy tstDepDisabled={tstDepDisabled} changeTstDepRes={changeTstDepRes} prId={prId} choiceVer={choiceVer}tstDepRes ={tstDepRes}></TestDeploy>;
         }
     }
 
     // 테스트 배포 결과 
     const showTestDeployResult = () => {
         if(tstDepRes !== "") {
-            return <TstDepResult tstDepRes ={tstDepRes}/>
+            return <TstDepResult setChoiceDisabled ={setChoiceDisabled}tstDepRes ={tstDepRes}/>;
         }
     }
 
     // 운영 적용 요청 
     const showMrCreate = () => {
         if(tstDepRes === "success") {
-            return <MrCreate prName={prName} choiceVer={choiceVer} setMrId={setMrId} setMcRes={setMcRes}></MrCreate>
+            return <MrCreate prName={prName} mrCreateDisabled={mrCreateDisabled} setTstDepDisabled={setTstDepDisabled}  choiceVer={choiceVer} setMrId={setMrId} setMcRes={setMcRes}></MrCreate>
         }
     }
 
@@ -111,7 +134,7 @@ const Main = () => {
     // 운영 환경 승인 & 반려 처리 버튼
     const showAppRej = () => {
         if(mcRes === "success") {
-            return <AppRej prId={prId} mrId={mrId} setAppRes={setAppRes}/>
+            return <AppRej appDisabled={appDisabled} appRes={appRes} prId={prId} setMrCreateDisabled={setMrCreateDisabled} mrId={mrId} setAppRes={setAppRes}/>
         }
     }
 
@@ -125,14 +148,14 @@ const Main = () => {
     // 운영 배포 버튼 보이기
     const showDeploy = () => {
         if(appRes === "success") {
-            return <Deploy prId={prId} mrId={mrId} choiceVer={choiceVer} setDepRes={setDepRes}></Deploy>
+            return <Deploy depDisabled={depDisabled} prId={prId} depRes={depRes} setAppDisabled={setAppDisabled} mrId={mrId} choiceVer={choiceVer} setDepRes={setDepRes}></Deploy>
         }
     }
 
     // 운영 배포 결과 보이기
     const showDepRes = () => {
-        if(depRes === "success") {
-            return <DepResult depRes={depRes}/>
+        if(depRes !== "") {
+            return <DepResult setDepDisabled={setDepDisabled} depRes={depRes}/>
         }
     }
 

@@ -79,6 +79,16 @@ const mrReject = async (request) => {
     return response
 }
 
+const deployStatus = async (request) => {
+    let response
+    try {
+        response = await axios.get(`${url}/deploy/response`)
+    } catch (error) {
+        console.log(error);
+    }
+    return response
+}
+
 // 배포
 app.post("/mr/deploy",(req, res) => {
     exeTstDep(req).then((response) => {
@@ -103,6 +113,13 @@ app.post("/mr/approve", (req,res) => {
 // 반려
 app.post("/mr/reject", (req, res) => {
     mrReject(req).then((response) => {
+        res.json(response.data);
+    })
+})
+
+// 상태 변경
+app.get("/deploy/status", (req,res)=> {
+    deployStatus(req).then((response)=> {
         res.json(response.data);
     })
 })

@@ -167,3 +167,7 @@ header > p {
 .main-right >div > div > label {
   margin-right: 21px;
 }
+button:disabled {
+  cursor: default;
+  opacity: .2;
+}
